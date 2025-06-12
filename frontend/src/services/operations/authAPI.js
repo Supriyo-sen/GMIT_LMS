@@ -85,7 +85,6 @@ export function signUp(accountType, firstName, lastName, email, password, confir
 // ================ Login ================
 export function login(email, password, navigate) {
   return async (dispatch) => {
-
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
 
@@ -93,36 +92,49 @@ export function login(email, password, navigate) {
       const response = await apiConnector("POST", LOGIN_API, {
         email,
         password,
-      })
-
-      console.log("LOGIN API RESPONSE............", response);
+      });
 
       if (!response.data.success) {
-        throw new Error(response.data.message)
+        throw new Error(response.data.message);
       }
 
-      toast.success("Login Successful")
-      dispatch(setToken(response.data.token))
+      toast.success("Login Successful");
 
-      const userImage = response.data?.user?.image
-        ? response.data.user.image
-        : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.firstName} ${response.data.user.lastName}`
+      const token = response.data.token;
+      const user = response.data.user;
 
-      dispatch(setUser({ ...response.data.user, image: userImage }));
-      // console.log('User data - ', response.data.user);/
-      localStorage.setItem("token", JSON.stringify(response.data?.token));
+      const userImage = user?.image
+        ? user.image
+        : `https://api.dicebear.com/5.x/initials/svg?seed=${user.firstName} ${user.lastName}`;
 
-      localStorage.setItem("user", JSON.stringify({ ...response.data.user, image: userImage }));
+      dispatch(setToken(token));
+      await dispatch(setUser({ ...user, image: userImage }));
 
-      navigate("/dashboard/my-profile");
+      // ✅ Store after dispatch
+      localStorage.setItem("token", JSON.stringify(token));
+      localStorage.setItem("user", JSON.stringify({ ...user, image: userImage }));
+
+      // ✅ Navigate after a short delay to avoid premature redirects
+      setTimeout(() => {
+        const role = user.accountType;
+        if (role === "Admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/dashboard/my-profile");
+        }
+      }, 100); // delay just enough to let Redux and router settle
+
     } catch (error) {
-      console.log("LOGIN API ERROR.......", error)
-      toast.error(error.response?.data?.message)
+      toast.error(error.response?.data?.message || "Login failed");
+      console.log("LOGIN ERROR", error);
+    } finally {
+      dispatch(setLoading(false));
+      toast.dismiss(toastId);
     }
-    dispatch(setLoading(false))
-    toast.dismiss(toastId)
-  }
+  };
 }
+
+
 
 
 // ================ get Password Reset Token ================

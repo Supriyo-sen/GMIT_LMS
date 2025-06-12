@@ -1,7 +1,18 @@
 
 import { useEffect, useState } from "react";
-import { Route, Routes, useLocation, Link } from "react-router-dom";
+import { Route, Routes, useLocation, Link, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+
+// Component to prevent admin from accessing public routes
+const PublicRoute = ({ children }) => {
+  const { user } = useSelector((state) => state.profile);
+  
+  if (user && user.accountType === ACCOUNT_TYPE.ADMIN) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+  
+  return children;
+};
 
 import Home from "./pages/Home"
 import Login from "./pages/Login"
@@ -27,6 +38,16 @@ import MyCourses from './components/core/Dashboard/MyCourses';
 import EditCourse from './components/core/Dashboard/EditCourse/EditCourse';
 import Instructor from './components/core/Dashboard/Instructor';
 
+// Admin
+import AdminLayout from "./components/core/Admin/AdminLayout"
+import AdminDashboard from "./pages/Admin/AdminDashboard"
+import Users from "./pages/Admin/Users"
+import Courses from "./pages/Admin/Courses"
+import Categories from "./pages/Admin/Categories"
+import Payments from "./pages/Admin/Payments"
+import Reviews from "./pages/Admin/Reviews"
+import AdminSettings from "./pages/Admin/Settings"
+
 
 import Cart from "./components/core/Dashboard/Cart/Cart";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
@@ -38,11 +59,12 @@ import VideoDetails from './components/core/ViewCourse/VideoDetails';
 import { ACCOUNT_TYPE } from './utils/constants';
 
 import { HiArrowNarrowUp } from "react-icons/hi"
-
+ 
 
 function App() {
 
   const { user } = useSelector((state) => state.profile)
+
 
   // Scroll to the top of the page when the component mounts
   const location = useLocation();
@@ -78,20 +100,44 @@ function App() {
 
   return (
     <div className="w-screen min-h-screen bg-richblack-900 flex flex-col font-inter">
-      <Navbar />
+      {user?.accountType !== ACCOUNT_TYPE.ADMIN && <Navbar />}
 
-      {/* go upward arrow */}
-      <button onClick={() => window.scrollTo(0, 0)}
-        className={`bg-yellow-25 hover:bg-yellow-50 hover:scale-110 p-3 text-lg text-black rounded-2xl fixed right-3 z-10 duration-500 ease-in-out ${showArrow ? 'bottom-6' : '-bottom-24'} `} >
-        <HiArrowNarrowUp />
-      </button>
+      {/* go upward arrow - only show for non-admin users */}
+      {user?.accountType !== ACCOUNT_TYPE.ADMIN && (
+        <button 
+          onClick={() => window.scrollTo(0, 0)}
+          className={`bg-yellow-25 hover:bg-yellow-50 hover:scale-110 p-3 text-lg text-black rounded-2xl fixed right-3 z-10 duration-500 ease-in-out ${showArrow ? 'bottom-6' : '-bottom-24'}`}
+        >
+          <HiArrowNarrowUp />
+        </button>
+      )}
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/about" element={<About />} />
-        <Route path="catalog/:catalogName" element={<Catalog />} />
-        <Route path="courses/:courseId" element={<CourseDetails />} />
+        <Route path="/" element={
+          <PublicRoute>
+            <Home />
+          </PublicRoute>
+        } />
+        <Route path="/contact" element={
+          <PublicRoute>
+            <Contact />
+          </PublicRoute>
+        } />
+        <Route path="/about" element={
+          <PublicRoute>
+            <About />
+          </PublicRoute>
+        } />
+        <Route path="catalog/:catalogName" element={
+          <PublicRoute>
+            <Catalog />
+          </PublicRoute>
+        } />
+        <Route path="courses/:courseId" element={
+          <PublicRoute>
+            <CourseDetails />
+          </PublicRoute>
+        } />
 
         {/* Open Route - for Only Non Logged in User */}
         <Route
@@ -157,6 +203,8 @@ function App() {
             </>
           )}
 
+
+
           {/* Route only for Instructors */}
           {/* add course , MyCourses, EditCourse*/}
           {user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (
@@ -167,7 +215,25 @@ function App() {
               <Route path="dashboard/edit-course/:courseId" element={<EditCourse />} />
             </>
           )}
+       
         </Route>
+
+        {user?.accountType === ACCOUNT_TYPE.ADMIN && (
+        <Route element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+        >
+          <Route path="admin/dashboard" element={<AdminDashboard />} />
+          <Route path="admin/users" element={<Users />} />
+          <Route path="admin/courses" element={<Courses />} />
+          <Route path="admin/categories" element={<Categories />} />
+          <Route path="admin/payments" element={<Payments />} />
+          <Route path="admin/reviews" element={<Reviews />} />
+          <Route path="admin/settings" element={<AdminSettings />} />
+        </Route>
+)}
 
 
         {/* For the watching course lectures */}
