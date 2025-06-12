@@ -1,39 +1,33 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { getAllCourses } from "../../services/operations/courseDetailsAPI";
 
 export default function AdminCourses() {
-  const [courses, setCourses] = useState([])
-  const [search, setSearch] = useState("")
+  const [courses, setCourses] = useState([]);
+  const { token } = useSelector((state) => state.auth);
+  const [search, setSearch] = useState("");
+
+  const fetchAllCourses = async (token) => {
+    try {
+      const response = await getAllCourses(token);
+      console.log("GET_ALL_COURSE_API API RESPONSE............", response);
+      if (response) {
+        setCourses(response);
+      }
+    } catch (error) {
+      console.error("Could not fetch courses:", error);
+    }
+  };
 
   useEffect(() => {
-    // Simulated fetch call
-    setCourses([
-      {
-        id: 1,
-        title: "React Basics",
-        instructor: "John Doe",
-        enrolled: 120,
-        rating: 4.5,
-      },
-      {
-        id: 2,
-        title: "Advanced Node.js",
-        instructor: "Jane Smith",
-        enrolled: 75,
-        rating: 4.7,
-      },
-      {
-        id: 3,
-        title: "MongoDB for Beginners",
-        instructor: "Ali Khan",
-        enrolled: 98,
-        rating: 4.3,
-      },
-    ])
-  }, [])
+    fetchAllCourses(token);
+  }, []);
 
   const filteredCourses = courses.filter((course) =>
-    course.title.toLowerCase().includes(search.toLowerCase())
-  )
+    course.courseName.toLowerCase().includes(search.toLowerCase())
+  );
+
+  console.log("Filtered Courses:", filteredCourses);
 
   return (
     <div className="p-6">
@@ -51,24 +45,40 @@ export default function AdminCourses() {
         <table className="min-w-full text-white text-left">
           <thead className="bg-richblack-800 text-richblack-100">
             <tr>
-              <th className="px-4 py-2 border-b border-richblack-700">Course Title</th>
-              <th className="px-4 py-2 border-b border-richblack-700">Instructor</th>
-              <th className="px-4 py-2 border-b border-richblack-700">Enrolled</th>
-              <th className="px-4 py-2 border-b border-richblack-700">Rating</th>
+              <th className="px-4 py-2 border-b border-richblack-700">
+                Course Title
+              </th>
+              <th className="px-4 py-2 border-b border-richblack-700">
+                Instructor
+              </th>
+              <th className="px-4 py-2 border-b border-richblack-700">
+                Enrolled
+              </th>
+              <th className="px-4 py-2 border-b border-richblack-700">
+                Rating
+              </th>
             </tr>
           </thead>
           <tbody>
             {filteredCourses.map((course) => (
-              <tr key={course.id} className="bg-richblack-800">
-                <td className="px-4 py-2 border-b border-richblack-700">{course.title}</td>
-                <td className="px-4 py-2 border-b border-richblack-700">{course.instructor}</td>
-                <td className="px-4 py-2 border-b border-richblack-700">{course.enrolled}</td>
-                <td className="px-4 py-2 border-b border-richblack-700">{course.rating}</td>
+              <tr key={course._id} className="bg-richblack-800">
+                <td className="px-4 py-2 border-b border-richblack-700">
+                  {course.courseName}
+                </td>
+                <td className="px-4 py-2 border-b border-richblack-700">
+                  {course.instructor.firstName}
+                </td>
+                <td className="px-4 py-2 border-b border-richblack-700">
+                  {course.enrolled ? course.enrolled.length : 0}
+                </td>
+                <td className="px-4 py-2 border-b border-richblack-700">
+                  {course.rating ? course.rating.toFixed(1) : "N/A"}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
-  )
+  );
 }
