@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { getUserProfiles } from "../../services/operations/profileAPI";
 
 const dummyUsers = [
   {
@@ -26,10 +28,32 @@ const dummyUsers = [
 
 const Users = () => {
   const [search, setSearch] = useState("");
+  const [users, setUsers] = useState([]);
+  const { token } = useSelector((state) => state.auth);
 
-  const filteredUsers = dummyUsers.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase()) ||
-    user.email.toLowerCase().includes(search.toLowerCase())
+  const getUsers = async () => {
+    try {
+      const response = await getUserProfiles(token);
+      console.log(
+        "GET_ALL_USER_PROFILES_API API RESPONSE............",
+        response
+      );
+      if (response) {
+        setUsers(response);
+      }
+    } catch (error) {
+      console.error("Could not fetch users:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.firstName.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -51,24 +75,26 @@ const Users = () => {
               <th className="px-4 py-2 border-b border-richblack-700">Name</th>
               <th className="px-4 py-2 border-b border-richblack-700">Email</th>
               <th className="px-4 py-2 border-b border-richblack-700">Role</th>
-              <th className="px-4 py-2 border-b border-richblack-700">Status</th>
+              <th className="px-4 py-2 border-b border-richblack-700">
+                Status
+              </th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
               <tr key={user.id} className="border-b border-richblack-700">
-                <td className="px-4 py-3">{user.name}</td>
+                <td className="px-4 py-3">{user.firstName}</td>
                 <td className="px-4 py-3">{user.email}</td>
-                <td className="px-4 py-3">{user.role}</td>
+                <td className="px-4 py-3">{user.accountType}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`px-2 py-1 rounded text-sm font-medium ${
-                      user.status === "Active"
+                      user.active
                         ? "bg-green-600 text-white"
                         : "bg-red-600 text-white"
                     }`}
                   >
-                    {user.status}
+                    {user.active ? "Active" : "Inactive"}
                   </span>
                 </td>
               </tr>
