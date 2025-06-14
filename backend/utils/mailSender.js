@@ -12,7 +12,7 @@ const mailSender = async (email, title, body) => {
     });
 
     const info = await transporter.sendMail({
-      from: "StudyNotion || by Aniruddha Gade",
+      from: "StudyNotion || by Supriyo Sen",
       to: email,
       subject: title,
       html: body,
@@ -21,7 +21,7 @@ const mailSender = async (email, title, body) => {
     // console.log('Info of sent mail - ', info);
     return info;
   } catch (error) {
-    console.log("Error while sending mail (mailSender) - ", email);
+    console.log("Error while sending mail (mailSender) - ", email, error);
   }
 };
 
