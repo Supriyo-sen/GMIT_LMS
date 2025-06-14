@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { createCategory } from "../../services/operations/courseDetailsAPI";
+import { useEffect, useState } from "react";
+import {
+  createCategory,
+  fetchCourseCategories,
+} from "../../services/operations/courseDetailsAPI";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
@@ -11,6 +14,20 @@ export default function Category() {
     name: "",
     description: "",
   });
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetchCourseCategories({}, token); // Adjust this to fetch categories
+      console.log("FETCH_CATEGORIES_API API RESPONSE............", response);
+      setCategories(response);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Failed to fetch categories");
+    }
+  };
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,10 +42,9 @@ export default function Category() {
     try {
       const response = await createCategory(category, token);
       console.log("CREATE_CATEGORY_API API RESPONSE............", response);
-      if (response.success) {
-        toast.success(response.message);
-        setCategories((prev) => [...prev, response.data]);
-        setCategory({ name: "", description: "" }); // Reset form
+      if (response) {
+        setCategory(() => ({ name: "", description: "" }));
+        fetchCategories();
       }
     } catch (error) {
       console.error("Error creating category:", error);
@@ -89,16 +105,14 @@ export default function Category() {
       <section className="mb-10">
         <h2 className="text-xl font-bold mb-4">📋 All Categories</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          {[...Array(5)].map((_, idx) => (
+          {categories.map((item, idx) => (
             <div
               key={idx}
               className="bg-gray-50 p-4 border border-gray-200 rounded shadow cursor-pointer hover:bg-gray-100"
-              onClick={() => setSelectedCategoryId(`category-${idx + 1}`)}
+              onClick={() => setSelectedCategoryId(`Category-${idx + 1}`)}
             >
-              <h3 className="font-semibold text-lg">Category {idx + 1}</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                This is a short description of category {idx + 1}.
-              </p>
+              <h3 className="font-semibold text-lg">{item.name}</h3>
+              <p className="text-sm text-gray-600 mt-1">{item.description}</p>
             </div>
           ))}
         </div>
