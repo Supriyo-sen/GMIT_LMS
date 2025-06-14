@@ -232,6 +232,52 @@ exports.sendPaymentSuccessEmail = async (req, res) => {
   }
 };
 
+exports.paymentOverview = async (req, res) => {
+  try {
+    const totalIncome = await Payment.aggregate([
+      { $match: { status: "SUCCESS" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+
+    const successCount = await Payment.countDocuments({ status: "SUCCESS" });
+    const failedCount = await Payment.countDocuments({ status: "FAILED" });
+
+    res.status(200).json({
+      success: true,
+      totalIncome: (totalIncome[0]?.total || 0) / 100, // convert to INR
+      successfulPayments: successCount,
+      failedPayments: failedCount,
+    });
+  } catch (error) {
+    console.error("Error in payments overview:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching overview" });
+  }
+};
+
+exports.logs = async (req, res) => {
+  try {
+    const payments = await Payment.find()
+      .populate("user", "firstName lastName email")
+      .populate("course", "courseName")
+      .sort({ date: -1 });
+
+    const formatted = payments.map((p) => ({
+      user: `${p.user.firstName} ${p.user.lastName}`,
+      email: p.user.email,
+      course: p.course.courseName,
+      amount: p.amount / 100,
+      status: p.status,
+      date: p.date,
+    }));
+
+    res.status(200).json({ success: true, data: formatted });
+  } catch (error) {
+    console.error("Error in payment logs:", error);
+    res.status(500).json({ success: false, message: "Error fetching logs" });
+  }
+};
 // ================ verify Signature ================
 // exports.verifySignature = async (req, res) => {
 //     const webhookSecret = '12345678';
