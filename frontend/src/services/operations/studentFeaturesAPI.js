@@ -87,7 +87,12 @@ export async function buyCourse(
           token
         );
         //verifyPayment
-        verifyPayment({ ...response, coursesId }, token, navigate, dispatch);
+        verifyPayment(
+          { ...response, coursesId, amount: orderResponse.data.message.amount },
+          token,
+          navigate,
+          dispatch
+        );
       },
     };
 

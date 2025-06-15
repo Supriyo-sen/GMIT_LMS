@@ -36,7 +36,7 @@ export default function Payments() {
   async function fetchPaymentData(token) {
     try {
       const response = await getPaymentLogs(token);
-      // console.log("GET_PAYMENT_LOGS_API RESPONSE............", response);
+      console.log("GET_PAYMENT_LOGS_API RESPONSE............", response);
       setPaymentData(response);
     } catch (error) {
       console.error("Error fetching payment data:", error);
@@ -104,16 +104,16 @@ export default function Payments() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 bg-richblack-800 text-white">
-            {paymentData.map((_, idx) => (
+            {paymentData.map((item, idx) => (
               <tr key={idx} className="hover:bg-gray-50">
-                <td className="px-4 py-3">John Doe</td>
-                <td className="px-4 py-3">john@example.com</td>
-                <td className="px-4 py-3">React for Beginners</td>
-                <td className="px-4 py-3">₹999</td>
+                <td className="px-4 py-3">{item.user}</td>
+                <td className="px-4 py-3">{item.email}</td>
+                <td className="px-4 py-3">{item.course}</td>
+                <td className="px-4 py-3">{item.amount}</td>
                 <td className="px-4 py-3">
                   <span className="text-green-600 font-medium">Success</span>
                 </td>
-                <td className="px-4 py-3">12 June 2025</td>
+                <td className="px-4 py-3">{item.date}</td>
               </tr>
             ))}
           </tbody>
