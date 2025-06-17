@@ -6,6 +6,7 @@ import {
   getPaymentOverView,
 } from "../../services/operations/studentFeaturesAPI";
 import toast from "react-hot-toast";
+import { formattedDate } from "../../utils/dateFormatter";
 
 export default function Payments() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,34 +92,53 @@ export default function Payments() {
       </div>
 
       {/* ========== PAYMENTS TABLE ========== */}
-      <div className="overflow-x-auto border rounded shadow">
-        <table className="min-w-full divide-y divide-gray-200 text-sm ">
-          <thead className="bg-richblack-800 text-white">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium">User</th>
-              <th className="text-left px-4 py-3 font-medium">Email</th>
-              <th className="text-left px-4 py-3 font-medium">Course</th>
-              <th className="text-left px-4 py-3 font-medium">Amount</th>
-              <th className="text-left px-4 py-3 font-medium">Status</th>
-              <th className="text-left px-4 py-3 font-medium">Date</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 bg-richblack-800 text-white">
-            {paymentData.map((item, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
-                <td className="px-4 py-3">{item.user}</td>
-                <td className="px-4 py-3">{item.email}</td>
-                <td className="px-4 py-3">{item.course}</td>
-                <td className="px-4 py-3">{item.amount}</td>
-                <td className="px-4 py-3">
-                  <span className="text-green-600 font-medium">Success</span>
-                </td>
-                <td className="px-4 py-3">{item.date}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <div className="overflow-x-auto border rounded-xl shadow bg-white">
+  <table className="min-w-full table-auto text-sm md:text-sm">
+    <thead className="bg-blue-100 text-blue-800">
+      <tr>
+        <th className="px-4 py-2 text-left border-b border-gray-300">👤 User</th>
+        <th className="px-4 py-2 text-left border-b border-gray-300">✉️ Email</th>
+        <th className="px-4 py-2 text-left border-b border-gray-300">📚 Course</th>
+        <th className="px-4 py-2 text-left border-b border-gray-300">👨‍🏫 Instructor</th>
+        <th className="px-4 py-2 text-left border-b border-gray-300">💰 Amount</th>
+        <th className="px-4 py-2 text-left border-b border-gray-300">📊 Status</th>
+        <th className="px-4 py-2 text-left border-b border-gray-300">📅 Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {paymentData
+        .filter((item) =>
+          [item.user, item.email, item.course]
+            .join(" ")
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        )
+        .map((item, idx) => (
+          <tr
+            key={idx}
+            className={`transition duration-300 hover:bg-blue-50 ${
+              idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+            }`}
+          >
+            <td className="px-4 py-3 border-b border-gray-200">{item.user}</td>
+            <td className="px-4 py-3 border-b border-gray-200">{item.email}</td>
+            <td className="px-4 py-3 border-b border-gray-200">{item.course}</td>
+            <td className="px-4 py-3 border-b border-gray-200">{item.instructor}</td>
+            <td className="px-4 py-3 border-b border-gray-200">₹{item.amount}</td>
+            <td className="px-4 py-3 border-b border-gray-200">
+              {item.status === "SUCCESS" ? (
+                <span className="text-green-600 font-semibold">Success</span>
+              ) : (
+                <span className="text-red-500 font-semibold">Failed</span>
+              )}
+            </td>
+            <td className="px-6 py-3 border-b border-gray-200">{formattedDate(item.date)}</td>
+          </tr>
+        ))}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 }

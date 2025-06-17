@@ -22,6 +22,9 @@ const {
   GET_FULL_COURSE_DETAILS_AUTHENTICATED,
   CREATE_RATING_API,
   LECTURE_COMPLETION_API,
+  FETCH_COURSE_CATEGORIES_PAGE_WISE_API,
+  GET_ALL_REVIEWS_API,
+  DELETE_CATEGORY_API,
 } = courseEndpoints;
 
 const { CREATE_CATEGORY_API } = categoryEndpoints;
@@ -87,6 +90,8 @@ export const fetchCourseCategories = async () => {
   }
   return result;
 };
+
+
 
 // ================ add Course Details ================
 export const addCourseDetails = async (data, token) => {
@@ -414,6 +419,25 @@ export const createRating = async (data, token) => {
   return success;
 };
 
+// ================ get All Reviews  ================
+export const getAllReviews = async (data, token) => {
+  const toastId = toast.loading("Loading...");
+  let result = null;
+  try {
+    const response = await apiConnector("GET", GET_ALL_REVIEWS_API, data, {
+      Authorization: `Bearer ${token}`,
+    });
+    if (!response?.data?.success) throw new Error("Could Not Get All Reviews");
+    result = response?.data?.data; // assuming this is an array of reviews
+  } catch (error) {
+    console.error("GET ALL REVIEWS API ERROR............", error);
+    toast.error(error.message || "Failed to fetch reviews");
+  }
+  toast.dismiss(toastId);
+  return result;
+};
+
+
 // ================ create Category  ================
 export const createCategory = async (data, token) => {
   const toastId = toast.loading("Loading...");
@@ -436,3 +460,52 @@ export const createCategory = async (data, token) => {
   toast.dismiss(toastId);
   return success;
 };
+
+// ================ fetch Course Categories Page Wise ================
+
+export const getCategoryPageDetails = async (data, token) => {
+  const toastId = toast.loading("Loading...");
+  let result = null;
+  try {
+    const response = await apiConnector("POST", FETCH_COURSE_CATEGORIES_PAGE_WISE_API, data, {
+      Authorization: `Bearer ${token}`,
+    });
+    console.log("GET_CATEGORY_PAGE_DETAILS_API API RESPONSE............", response);
+    if (!response?.data?.success) {
+      throw new Error("Could Not Fetch Category Page Details");
+    }
+    result = response?.data?.data;
+  } catch (error) {
+    console.log("GET_CATEGORY_PAGE_DETAILS_API API ERROR............", error);
+    toast.error(error.message);
+  }
+  toast.dismiss(toastId);
+  return result;
+};
+
+// ================ delete Category  ================
+export const deleteCategoryAPI = async (categoryId, token) => {
+  const toastId = toast.loading("Deleting...");
+  let success = false;
+  try {
+    const response = await apiConnector(
+      "DELETE",
+      `${DELETE_CATEGORY_API}/${categoryId}`,
+      null,
+      { Authorization: `Bearer ${token}` }
+    );
+    console.log("DELETE CATEGORY API RESPONSE............", response);
+    if (!response?.data?.success) {
+      throw new Error("Could Not Delete Category");
+    }
+    toast.success("Category Deleted");
+    success = true;
+  } catch (error) {
+    console.error("DELETE CATEGORY API ERROR............", error);
+    toast.error(error.message);
+  }
+  toast.dismiss(toastId);
+  return success;
+};
+
+

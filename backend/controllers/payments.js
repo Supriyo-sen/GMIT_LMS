@@ -260,13 +260,20 @@ exports.logs = async (req, res) => {
   try {
     const payments = await Payment.find()
       .populate("user", "firstName lastName email")
-      .populate("course", "courseName")
+      .populate({
+        path: "course",
+        populate: {
+          path: "instructor",
+          select: "firstName lastName"
+        }
+      })
       .sort({ date: -1 });
 
     const formatted = payments.map((p) => ({
       user: `${p.user.firstName} ${p.user.lastName}`,
       email: p.user.email,
       course: p.course.courseName,
+      instructor: `${p.course.instructor.firstName} ${p.course.instructor.lastName}`,
       amount: p.amount / 100,
       status: p.status,
       date: p.date,
@@ -278,6 +285,8 @@ exports.logs = async (req, res) => {
     res.status(500).json({ success: false, message: "Error fetching logs" });
   }
 };
+
+
 // ================ verify Signature ================
 // exports.verifySignature = async (req, res) => {
 //     const webhookSecret = '12345678';

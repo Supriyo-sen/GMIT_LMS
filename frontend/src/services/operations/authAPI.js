@@ -12,6 +12,7 @@ const {
   LOGIN_API,
   RESETPASSTOKEN_API,
   RESETPASSWORD_API,
+  APPROVE_INSTRUCTOR_API,
 } = endpoints
 
 // ================ send Otp ================
@@ -210,4 +211,37 @@ export function logout(navigate) {
     toast.success("Logged Out")
     navigate("/")
   }
+}
+
+// ================ approve Instructor ================
+export function approveInstructor(instructorId, token) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Approving...");
+    dispatch(setLoading(true));
+
+    try {
+      const response = await apiConnector(
+        "POST",
+        APPROVE_INSTRUCTOR_API,
+        { instructorId },
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+
+      console.log("APPROVE INSTRUCTOR RESPONSE............", response);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+
+      toast.success("Instructor Approved Successfully");
+    } catch (error) {
+      console.log("APPROVE INSTRUCTOR ERROR............", error);
+      toast.error(error.response?.data?.message || "Failed To Approve Instructor");
+    }
+
+    toast.dismiss(toastId);
+    dispatch(setLoading(false));
+  };
 }

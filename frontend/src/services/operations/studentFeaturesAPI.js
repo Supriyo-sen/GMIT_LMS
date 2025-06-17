@@ -186,6 +186,8 @@ export async function getPaymentLogs(token) {
       throw new Error(response.data.message);
     }
     result = response.data.data;
+    
+    
   } catch (error) {
     console.log("GET_PAYMENT_LOGS_API ERROR....", error);
     toast.error("Could not get Payment Logs");

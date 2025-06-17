@@ -6,7 +6,8 @@ const {
     signup,
     login,
     sendOTP,
-    changePassword
+    changePassword,
+    approveInstructor
 } = require('../controllers/auth');
 
 // Resetpassword controllers
@@ -17,7 +18,7 @@ const {
 
 
 // Middleware
-const { auth } = require('../middleware/auth');
+const { auth, isAdmin } = require('../middleware/auth');
 
 
 // Routes for Login, Signup, and Authentication
@@ -49,6 +50,9 @@ router.post('/reset-password-token', resetPasswordToken);
 
 // Route for resetting user's password after verification
 router.post("/reset-password", resetPassword)
+
+// Route for approving an instructor
+router.post('/approve-instructor', auth, isAdmin, approveInstructor);
 
 
 module.exports = router

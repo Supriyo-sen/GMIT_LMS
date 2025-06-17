@@ -18,6 +18,7 @@ const sidebarLinks = [
   { name: "Categories", path: "/admin/categories", icon: <LayersIcon /> },
   { name: "Payments", path: "/admin/payments", icon: <CreditCardIcon /> },
   { name: "Reviews", path: "/admin/reviews", icon: <MessageSquareIcon /> },
+  { name: "Messages", path: "/admin/messages", icon: <MessageSquareIcon /> },
   { name: "Settings", path: "/admin/settings", icon: <SettingsIcon /> },
 ];
 

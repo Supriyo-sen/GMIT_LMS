@@ -7,6 +7,7 @@ export const endpoints = {
   LOGIN_API: BASE_URL + "/auth/login",
   RESETPASSTOKEN_API: BASE_URL + "/auth/reset-password-token",
   RESETPASSWORD_API: BASE_URL + "/auth/reset-password",
+  APPROVE_INSTRUCTOR_API: BASE_URL + "/auth/approve-instructor",
 };
 
 // PROFILE ENDPOINTS
@@ -41,10 +42,12 @@ export const courseEndpoints = {
   DELETE_SECTION_API: BASE_URL + "/course/deleteSection",
   DELETE_SUBSECTION_API: BASE_URL + "/course/deleteSubSection",
   DELETE_COURSE_API: BASE_URL + "/course/deleteCourse",
-  GET_FULL_COURSE_DETAILS_AUTHENTICATED:
-    BASE_URL + "/course/getFullCourseDetails",
+  GET_FULL_COURSE_DETAILS_AUTHENTICATED: BASE_URL + "/course/getFullCourseDetails",
   LECTURE_COMPLETION_API: BASE_URL + "/course/updateCourseProgress",
   CREATE_RATING_API: BASE_URL + "/course/createRating",
+  GET_ALL_REVIEWS_API: BASE_URL + "/course/getReviews",
+  FETCH_COURSE_CATEGORIES_PAGE_WISE_API: BASE_URL + "/course/getCategoryPageDetails",
+  DELETE_CATEGORY_API: BASE_URL + "/course/deleteCategory",
 };
 
 // RATINGS AND REVIEWS
@@ -78,3 +81,15 @@ export const settingsEndpoints = {
 export const categoryEndpoints = {
   CREATE_CATEGORY_API: BASE_URL + "/course/createCategory",
 };
+
+// ANALYTICS ENDPOINTS
+export const analyticsEndpoints = {
+  DASHBOARD_ANALYTICS_API: BASE_URL + "/analytics/dashboard",
+  COURSE_ANALYTICS_API: BASE_URL + "/analytics/courses",
+  INSTRUCTOR_EARNINGS_API: BASE_URL + "/analytics/instructor-earnings",
+};
+
+// MESSAGES ENDPOINTS
+export const messagesEndpoints = {
+  FETCH_INBOX_MESSAGES: BASE_URL + "/message/inbox"
+}

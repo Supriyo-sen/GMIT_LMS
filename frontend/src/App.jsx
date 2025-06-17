@@ -59,6 +59,8 @@ import VideoDetails from './components/core/ViewCourse/VideoDetails';
 import { ACCOUNT_TYPE } from './utils/constants';
 
 import { HiArrowNarrowUp } from "react-icons/hi"
+import AdminMessageSender from "./pages/Admin/AdminMessageSender";
+import UserInbox from "./pages/UserInbox";
  
 
 function App() {
@@ -213,6 +215,7 @@ function App() {
               <Route path="dashboard/add-course" element={<AddCourse />} />
               <Route path="dashboard/my-courses" element={<MyCourses />} />
               <Route path="dashboard/edit-course/:courseId" element={<EditCourse />} />
+              <Route path="dashboard/inbox" element={<UserInbox />} />
             </>
           )}
        
@@ -231,6 +234,7 @@ function App() {
           <Route path="admin/categories" element={<Categories />} />
           <Route path="admin/payments" element={<Payments />} />
           <Route path="admin/reviews" element={<Reviews />} />
+          <Route path="admin/messages" element={<AdminMessageSender />} />
           <Route path="admin/settings" element={<AdminSettings />} />
         </Route>
 )}

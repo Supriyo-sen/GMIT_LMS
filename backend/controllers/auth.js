@@ -136,8 +136,8 @@ exports.signup = async (req, res) => {
             gender: null, dateOfBirth: null, about: null, contactNumber: null
         });
 
-        let approved = "";
-        approved === "Instructor" ? (approved = false) : (approved = true);
+        let approved = accountType === "Instructor" ? false : true;
+
 
         // create entry in DB
         const userData = await User.create({
@@ -188,6 +188,15 @@ exports.login = async (req, res) => {
                 message: 'You are not registered with us'
             });
         }
+
+        // After user is found from DB
+        if (user.accountType === "Instructor" && !user.approved) {
+            return res.status(403).json({
+                success: false,
+                message: "Your instructor profile is under review by admin. Please wait for approval.",
+            });
+        }
+
 
 
         // comapare given password and saved password from DB
@@ -240,6 +249,27 @@ exports.login = async (req, res) => {
         })
     }
 }
+
+exports.approveInstructor = async (req, res) => {
+  try {
+    const { instructorId } = req.body;
+
+    const user = await User.findById(instructorId);
+
+    if (!user || user.accountType !== "Instructor") {
+      return res.status(404).json({ success: false, message: "Instructor not found" });
+    }
+
+    user.approved = true;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Instructor approved successfully" });
+  } catch (error) {
+    console.error("Error approving instructor:", error);
+    res.status(500).json({ success: false, message: "Failed to approve instructor" });
+  }
+};
+
 
 
 // ================ CHANGE PASSWORD ================
