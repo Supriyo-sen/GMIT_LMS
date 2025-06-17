@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 let socket = null;
 
 export const connectSocket = (userId) => {
+  console.log("Connecting socket for user:", userId);
   if (!socket) {
     socket = io("http://localhost:5000", {
       query: { userId },
@@ -23,7 +24,6 @@ export const connectSocket = (userId) => {
 
 export const getSocket = () => socket;
 
-
 // AdminMessageSender.jsx
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -31,13 +31,18 @@ import { useSelector } from "react-redux";
 import { getUserProfiles } from "../../services/operations/profileAPI";
 
 const AdminMessageSender = () => {
-  const { user, token } = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.profile);
   const [users, setUsers] = useState([]);
   const [receiverId, setReceiverId] = useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (user) connectSocket(user._id);
+    // console.log("Hook", user);
+    if (user) {
+      connectSocket(user._id);
+      // console.log("User connected:", user._id);
+    }
     getAllUsers();
   }, [user]);
 
@@ -55,7 +60,7 @@ const AdminMessageSender = () => {
       return;
     }
 
-    socket.emit("admin-message", { receiverId, message });
+    socket.emit("admin-message", { senderId: user._id, receiverId, message });
     setMessage("");
   };
 

@@ -4,21 +4,25 @@ import { connectSocket, getSocket } from "../utils/socket";
 import { fetchInboxMessages } from "../services/operations/messages";
 
 const UserInbox = () => {
-  const { user, token } = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.profile);
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    console.log("User Inbox Hook", user);
     if (user) {
       connectSocket(user._id);
       loadOldMessages();
 
       const socket = getSocket();
       socket.on("receive-message", ({ message }) => {
-        setMessages(prev => [...prev, { message, timestamp: new Date() }]);
+        // console.log("New message received:", message);
+        setMessages((prev) => [...prev, { message, timestamp: new Date() }]);
       });
     }
-  }, [user]);
+  }, []);
 
+  // console.log("User Inbox Messages:", messages);
   const loadOldMessages = async () => {
     const data = await fetchInboxMessages(token);
     if (data) setMessages(data);
