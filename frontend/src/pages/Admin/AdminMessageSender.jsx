@@ -4,7 +4,6 @@ import { io } from "socket.io-client";
 let socket = null;
 
 export const connectSocket = (userId) => {
-  console.log("Connecting socket for user:", userId);
   if (!socket) {
     socket = io("http://localhost:5000", {
       query: { userId },
@@ -29,6 +28,8 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 // import { connectSocket } from "../../utils/socket";
 import { getUserProfiles } from "../../services/operations/profileAPI";
+import AdminSentMessages from "../../components/core/Admin/AdminSentMessages";
+import toast from "react-hot-toast";
 
 const AdminMessageSender = () => {
   const { token } = useSelector((state) => state.auth);
@@ -36,6 +37,7 @@ const AdminMessageSender = () => {
   const [users, setUsers] = useState([]);
   const [receiverId, setReceiverId] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // console.log("Hook", user);
@@ -52,16 +54,26 @@ const AdminMessageSender = () => {
   };
 
   const sendMessage = () => {
-    if (!receiverId || !message) return;
+    setLoading(true);
+    if (loading) return; // Prevent multiple clicks
+    if (!receiverId || !message) {
+      toast.error("Please select a user and type a message.");
+      setLoading(false);
+      return;
+    }
 
     const socket = getSocket();
     if (!socket) {
       console.warn("Socket not connected yet.");
+      setLoading(false);
       return;
     }
 
     socket.emit("admin-message", { senderId: user._id, receiverId, message });
     setMessage("");
+    setReceiverId("");
+    setLoading(false);
+    toast.success("Message sent successfully!");
   };
 
   return (

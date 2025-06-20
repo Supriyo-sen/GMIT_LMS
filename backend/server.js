@@ -64,7 +64,8 @@ const paymentRoutes = require("./routes/payments");
 const courseRoutes = require("./routes/course");
 const analyticsRoutes = require("./routes/analytics");
 const messageRoutes = require("./routes/message.route");
-
+const aiRoutes = require("./routes/ai.route");
+const reachRoutes = require("./routes/reach");
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
@@ -78,6 +79,8 @@ app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/message", messageRoutes);
+app.use("/api/v1/ai", aiRoutes);
+app.use("/api/v1/reach", reachRoutes);
 
 // Default
 app.get("/", (req, res) => res.send("Server is up and running."));

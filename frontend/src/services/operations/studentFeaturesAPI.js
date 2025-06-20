@@ -1,5 +1,5 @@
 import { toast } from "react-hot-toast";
-import { studentEndpoints } from "../apis";
+import { aiEndpoints, studentEndpoints } from "../apis";
 import { apiConnector } from "../apiConnector";
 import rzpLogo from "../../assets/Logo/rzp_logo.png";
 import { setPaymentLoading } from "../../slices/courseSlice";
@@ -12,6 +12,8 @@ const {
   PAYMENT_OVERVIEW_API,
   PAYMENT_LOGS_API,
 } = studentEndpoints;
+
+const { ASK_AI_API } = aiEndpoints;
 
 function loadScript(src) {
   return new Promise((resolve) => {
@@ -186,8 +188,6 @@ export async function getPaymentLogs(token) {
       throw new Error(response.data.message);
     }
     result = response.data.data;
-    
-    
   } catch (error) {
     console.log("GET_PAYMENT_LOGS_API ERROR....", error);
     toast.error("Could not get Payment Logs");
@@ -195,3 +195,17 @@ export async function getPaymentLogs(token) {
   toast.dismiss(toastId);
   return result;
 }
+
+export const askAIAssistant = async (token, data) => {
+  try {
+    const response = await apiConnector("POST", ASK_AI_API, data, {
+      Authorization: `Bearer ${token}`,
+    });
+    return (
+      response?.data?.answer || "Sorry, I couldn't understand your question."
+    );
+  } catch (error) {
+    console.error("AI Assistant Error:", error);
+    return "Sorry, I couldn't understand your question.";
+  }
+};

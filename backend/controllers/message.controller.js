@@ -57,3 +57,18 @@ exports.getUserMessages = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch inbox." });
   }
 };
+
+// controllers/message.js
+exports.getSentMessages = async (req, res) => {
+  try {
+    const messages = await Message.find({ senderId: req.user.id })
+      .populate("receiverId", "firstName lastName email accountType")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, data: messages });
+  } catch (err) {
+    console.error("Error fetching sent messages:", err);
+    res.status(500).json({ success: false, message: "Failed to fetch sent messages" });
+  }
+};
+

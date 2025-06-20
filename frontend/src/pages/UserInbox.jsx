@@ -9,18 +9,26 @@ const UserInbox = () => {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    console.log("User Inbox Hook", user);
     if (user) {
       connectSocket(user._id);
       loadOldMessages();
-
+  
       const socket = getSocket();
       socket.on("receive-message", ({ message }) => {
-        // console.log("New message received:", message);
-        setMessages((prev) => [...prev, { message, timestamp: new Date() }]);
+        // Option 1: Avoid duplicates
+        setMessages((prev) => {
+          const alreadyExists = prev.some((msg) => msg.message === message);
+          if (!alreadyExists) {
+            return [...prev, { message, timestamp: new Date() }];
+          }
+          return prev;
+        });
+  
+        // Option 2 (alternative): reload from DB instead of above logic
+        // loadOldMessages();
       });
     }
-  }, []);
+  }, [user]); // add [user] as dependency so it re-triggers when user loads  
 
   // console.log("User Inbox Messages:", messages);
   const loadOldMessages = async () => {
