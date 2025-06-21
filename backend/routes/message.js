@@ -5,7 +5,7 @@ const {
   getMessages,
   getUserMessages,
   getSentMessages,
-} = require("../controllers/message.controller");
+} = require("../controllers/message");
 const { auth, isAdmin } = require("../middleware/auth");
 
 // Admin sends message
@@ -18,6 +18,5 @@ router.get("/inbox", auth, getUserMessages);
 
 // routes/message.js
 router.get("/sent", auth, isAdmin, getSentMessages);
-
 
 module.exports = router;

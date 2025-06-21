@@ -43,7 +43,7 @@ export const sidebarLinks = [
     icon: "VscHistory",
   },
   {
-    id: 7,
+    id: 8,
     name: "Inbox",
     path: "/dashboard/inbox",
     type: ACCOUNT_TYPE.INSTRUCTOR,

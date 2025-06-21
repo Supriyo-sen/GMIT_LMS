@@ -63,7 +63,7 @@ const profileRoutes = require("./routes/profile");
 const paymentRoutes = require("./routes/payments");
 const courseRoutes = require("./routes/course");
 const analyticsRoutes = require("./routes/analytics");
-const messageRoutes = require("./routes/message.route");
+const messageRoutes = require("./routes/message");
 const aiRoutes = require("./routes/ai.route");
 const reachRoutes = require("./routes/reach");
 // Middleware
